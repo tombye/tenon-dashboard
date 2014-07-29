@@ -25,7 +25,7 @@
     if (!username || !password) { return; }
     var basicRequest = new XMLHttpRequest();
     basicRequest.onreadystatechange = function (XHRObj) { console.log(XHRObj.srcElement); }
-    basicRequest.open("get", "http://localhost:5000", true, username, password);
+    basicRequest.open("get", "http://protected-ridge-2923.herokuapp.com", true, username, password);
     basicRequest.withCredentials = true
     basicRequest.send()
   });

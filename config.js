@@ -1,6 +1,5 @@
 window.config = {
-  // api : 'http://protected-ridge-2923.herokuapp.com/',
-  api : 'http://localhost:5000',
+  api : 'http://protected-ridge-2923.herokuapp.com',
   defaultOpts : {
     'certainty' : 0,
     'importance' : 0,
