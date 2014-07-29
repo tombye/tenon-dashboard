@@ -37,7 +37,10 @@
       'dataType' : 'json',
       'username' : this.username,
       'password' : this.password,
-      'url' : root.config.api
+      'url' : root.config.api,
+      'xhrFields' : {
+        'withCredentials' : true
+      }
     };
     $.ajax(opts)
     .done(function (data, status, jqXHR) {
