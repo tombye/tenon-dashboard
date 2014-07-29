@@ -34,7 +34,7 @@
     data.url = this.url;
     opts = {
       'data' : data,
-      'dataType' : 'json',
+      'dataType' : 'text',
       'username' : this.username,
       'password' : this.password,
       'url' : root.config.api,
