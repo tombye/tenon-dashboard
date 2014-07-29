@@ -4,7 +4,9 @@
   var $ = root.jQuery,
       getQueryVariable,
       PageRequest,
-      tenonDashboard;
+      tenonDashboard,
+      USERNAME,
+      PASSWORD;
 
   getQueryVariable = function (variable) {
     var query = window.location.search.replace(/\/{1}$/, '');
@@ -22,8 +24,8 @@
     this.url = url;              
   };
   PageRequest.prototype.opts = {};
-  PageRequest.prototype.username = getQueryVariable('username');
-  PageRequest.prototype.password = getQueryVariable('password');
+  PageRequest.prototype.username = USERNAME;
+  PageRequest.prototype.password = PASSWORD;
   PageRequest.prototype.send = function () {
     var data = this.opts,
         opts,
@@ -47,7 +49,7 @@
   };
   PageRequest.prototype.onDone = function (data) {
     this.data = data;
-    $(document).on('request.complete', { 'url' : this.url });
+    tenonDashboard.displayResults();
   };
   PageRequest.prototype.onError = function (status) {
     $(document).on('request.fail', {
@@ -100,7 +102,7 @@
                      
     },
     displayResults : function () {
-
+      console.log(this.data);
     },
     init : function () {
       var _this = this;
@@ -113,6 +115,9 @@
   root.tenonDashboard = tenonDashboard;
 
   $(document).ready(function () {
+    USERNAME = getQueryVariable('username');
+    PASSWORD = getQueryVariable('password');
+    if (!USERNAME || !PASSWORD) { return; }
     tenonDashboard.init();
   });
 })(window);
