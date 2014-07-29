@@ -52,7 +52,7 @@
   };
   PageRequest.prototype.onDone = function (data) {
     this.data = data;
-    tenonDashboard.displayResults();
+    tenonDashboard.displayResults(this.url);
   };
   PageRequest.prototype.onError = function (status) {
     $(document).on('request.fail', {
@@ -62,7 +62,7 @@
   };
 
   tenonDashboard = {
-    requests : [],
+    requests : {},
     makeRequestObj : function (url, opts) {
       var _this = this,
           pageRequest;
@@ -104,8 +104,8 @@
     processResults : function () {
                      
     },
-    displayResults : function () {
-      console.log(this.data);
+    displayResults : function (url) {
+      console.log(this.requests[url].data);
     },
     init : function () {
       var _this = this;
