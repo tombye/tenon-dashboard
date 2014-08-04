@@ -62,6 +62,26 @@
   };
 
   tenonDashboard = {
+    pageIssuesTemplate : '<div class="issue">' + 
+                          '<p class="issue-title">Problem: {{errorTitle}}</p>' +
+                          '<p class="issue-priority">Priority: {{priority}}</p>' +
+                          '<p class="issue-description">{{errorDescription}}</p>' +
+                          '<p class="issue-rule">Rule: {{resultTitle}}</p>' +
+                          '<ul class="issue-standards">' +
+                            '{{#standards}}' +
+                            '<li>{{standard}}</li>' +
+                            '{{/standards}}' +
+                          '</ul>' +
+                        '</div>',
+    pageGlobalsTemplate : '<div class="globals">' +
+                            '<h1 class="page-url">{{pageUrl}}</h1>' +
+                            '<p>Errors: {{errors}}</p>' +
+                            '<p>Issues: {{issues}}</p>' +
+                            '<p>Warnings: {{warnings}}</p>' +
+                            '<p>Issues of AAA level: {{levels.AAA}}</p>' +
+                            '<p>Issues of AA level: {{levels.AA}}</p>' +
+                            '<p>Issues of A level: {{levels.A}}</p>' +
+                          '</div>',
     requests : {},
     makeRequestObj : function (url, opts) {
       var _this = this,
@@ -101,11 +121,45 @@
         this.requests[url].send();
       }; 
     },
-    processResults : function () {
-                     
+    processResponse : function (responseData) {
+      var resultsData = {
+        globals : {
+          pageUrl : responseData.request.url,
+          errors : responseData.resultSummary.issues.totalErrors,
+          issues : responseData.resultSummary.issues.totalIssues,
+          warnings : responseData.resultSummary.issues.totalWarnings,
+          levels : {
+            A : responseData.resultSummary.issuesByLevel.A.count,
+            AA : responseData.resultSummary.issuesByLevel.AA.count,
+            AAA : responseData.resultSummary.issuesByLevel.AAA.count
+          }
+        },
+        issues : $.map(responseData.resultSet, function (issue, idx) {
+          issue.standards = $.map(issue.standards, function (standard, idx) {
+            return { 'standard' : standard };
+          });
+          return issue;
+        })
+      }; 
+      return resultsData;
     },
     displayResults : function (url) {
-      console.log(this.requests[url].data);
+      var responseData = this.requests[url].data,
+          pageGlobalsTemplate = Hogan.compile(this.pageGlobalsTemplate),
+          pageIssuesTemplate = Hogan.compile(this.pageIssuesTemplate),
+          resultsData,
+          pageGlobalsHTML,
+          pageIssuesHTML,
+          a, b;
+
+      console.log(responseData);
+      resultsData = this.processResponse(responseData);
+      pageGlobalsHTML = pageGlobalsTemplate.render(resultsData.globals);
+      pageIssuesHTML = '';
+      for (a = 0, b = resultsData.issues.length; a < b; a++) {
+        pageIssuesHTML += pageIssuesTemplate.render(resultsData.issues[a]);
+      }
+      $('#results').append(pageGlobalsHTML + pageIssuesHTML);
     },
     init : function () {
       var _this = this;
