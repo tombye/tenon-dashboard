@@ -3,7 +3,7 @@ window.config = {
   defaultOpts : {},
   pages : [
     {
-      'url' : 'https://www.gov.uk/vat'
+      'url' : 'http://www.hmrc.gov.uk'
     }
   ]
 };

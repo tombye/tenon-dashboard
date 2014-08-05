@@ -1,0 +1,11 @@
+<div class="issue">
+  <p class="issue-title">Problem: {{errorTitle}}</p>
+  <p class="issue-priority">Priority: {{priority}}</p>
+  <p class="issue-description">{{errorDescription}}</p>
+  <p class="issue-rule">Rule: {{resultTitle}}</p>
+  <ul class="issue-standards">
+    {{#standards}}
+    <li><a href="{{googleSearch}}">{{standard}}</a></li>
+    {{/standards}}
+  </ul>
+</div>

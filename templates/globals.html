@@ -1,0 +1,28 @@
+<div class="globals">
+  <h1 class="page-url">{{pageUrl}}</h1>
+  <p>Errors: {{errors}}</p>
+  <p>Issues: {{issues}}</p>
+  <p>Warnings: {{warnings}}</p>
+  <p>Issues of AAA level: {{levels.AAA}}</p>
+  <p>Issues of AA level: {{levels.AA}}</p>
+  <p>Issues of A level: {{levels.A}}</p>
+  <ul>
+    {{#bestPracticeFails}}
+    <li>
+    <p>The page broke this rule of best practice:</p>
+    <blockquote>{{error}} (ID: {{bpID}})</blockquote>
+    <p>...{{count}} times</p>
+    </li>
+    {{/bestPracticeFails}}
+  </ul>
+  <ul>
+    {{#elements}}
+    <li>
+      <p>This element</p>
+      <p><code>{{{html}}}</code></p>
+      <p><code>{{xpath}}</code></p>
+      <p>...was involved in {{count}} results</p>
+    </li>
+    {{/elements}}
+  </ul>
+</div>
