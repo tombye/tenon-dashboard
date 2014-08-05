@@ -62,26 +62,12 @@
   };
 
   tenonDashboard = {
-    pageIssuesTemplate : '<div class="issue">' + 
-                          '<p class="issue-title">Problem: {{errorTitle}}</p>' +
-                          '<p class="issue-priority">Priority: {{priority}}</p>' +
-                          '<p class="issue-description">{{errorDescription}}</p>' +
-                          '<p class="issue-rule">Rule: {{resultTitle}}</p>' +
-                          '<ul class="issue-standards">' +
-                            '{{#standards}}' +
-                            '<li>{{standard}}</li>' +
-                            '{{/standards}}' +
-                          '</ul>' +
-                        '</div>',
-    pageGlobalsTemplate : '<div class="globals">' +
-                            '<h1 class="page-url">{{pageUrl}}</h1>' +
-                            '<p>Errors: {{errors}}</p>' +
-                            '<p>Issues: {{issues}}</p>' +
-                            '<p>Warnings: {{warnings}}</p>' +
-                            '<p>Issues of AAA level: {{levels.AAA}}</p>' +
-                            '<p>Issues of AA level: {{levels.AA}}</p>' +
-                            '<p>Issues of A level: {{levels.A}}</p>' +
-                          '</div>',
+    templates : {
+      names : [
+        'issue',
+        'globals'
+      ]            
+    },
     requests : {},
     makeRequestObj : function (url, opts) {
       var _this = this,
@@ -104,6 +90,24 @@
         PageRequest.prototype.opts[key] = val;
       });
     },
+    loadTemplates : function () {
+      var templateLoader = new $.Deferred(),
+          onTemplateLoad = function (data, template) {
+            this.templates[template] = data;
+            this.templateLoader.resolve();
+          }.bind(this);
+
+      $.each(this.templates.names, function (idx, template) {
+        $.ajax({
+        'dataType' : 'html',
+        'url' : 'templates/' + template + '.html'
+        })
+        .done(function (data) {
+          onTemplateLoad(data, template);
+        });
+      });
+      return templateLoader;
+    },
     createRequests : function () {
       var config = root.config,
           _this = this;
@@ -122,7 +126,75 @@
       }; 
     },
     processResponse : function (responseData) {
-      var resultsData = {
+      var resultsData,
+          _formatStandard,
+          _getUniqueElements,
+          _getBestPracticeFails;
+      
+      _formatStandard = function (standard) {
+        var query = standard.replace('Web Content Accessibility Guidelines (WCAG) 2.0, Level A:', ''),
+            googleURL = "https://www.google.co.uk/search?q='",
+            WCAGURL = "' site: www.w3.org/TR/WCAG20/";
+
+        return {
+          'googleSearch' : encodeURI(googleURL + query + WCAGURL),
+          'standard' : standard
+        };
+      };
+
+      _getUniqueElements = function () {
+        var xpaths = {},
+            elements = [];
+
+        $.each(responseData.resultSet, function (idx, result) {
+          var xpath = result.xpath;
+
+          if (typeof xpaths[xpath] === 'undefined') {
+            xpaths[xpath] = {
+              'count' : 1,
+              'html' : result.errorSnippet
+            };
+          } else {
+            xpaths[xpath].count++;
+          }
+        });
+        $.each(xpaths, function (key, val) {
+          elements.push({
+            'xpath' : key,
+            'count' : val.count,
+            'html' : val.html
+          });
+        });
+        return elements;
+      };
+
+      _getBestPracticeFails = function () {
+        var bestPracticeIds = {},
+            bestPracticeFails = [];
+
+        $.each(responseData.resultSet, function (idx, result) {
+          var bpID = result.bpID;
+
+          if (typeof bestPracticeIds[bpID] === 'undefined') {
+            bestPracticeIds[bpID] = {
+              'count' : 1,
+              'error' : result.errorDescription
+            };
+          } else {
+            bestPracticeIds[bpID].count++;
+          }
+        });
+        $.each(bestPracticeIds, function (key, val) {
+          bestPracticeFails.push({
+            'bpID' : key,
+            'count' : val.count,
+            'error' : val.error
+          });
+        });
+        return bestPracticeFails;
+      };
+
+      resultsData = {
         globals : {
           pageUrl : responseData.request.url,
           errors : responseData.resultSummary.issues.totalErrors,
@@ -132,11 +204,13 @@
             A : responseData.resultSummary.issuesByLevel.A.count,
             AA : responseData.resultSummary.issuesByLevel.AA.count,
             AAA : responseData.resultSummary.issuesByLevel.AAA.count
-          }
+          },
+          elements : _getUniqueElements(),
+          bestPracticeFails : _getBestPracticeFails()
         },
         issues : $.map(responseData.resultSet, function (issue, idx) {
           issue.standards = $.map(issue.standards, function (standard, idx) {
-            return { 'standard' : standard };
+            return _formatStandard(standard);
           });
           return issue;
         })
@@ -145,19 +219,20 @@
     },
     displayResults : function (url) {
       var responseData = this.requests[url].data,
-          pageGlobalsTemplate = Hogan.compile(this.pageGlobalsTemplate),
-          pageIssuesTemplate = Hogan.compile(this.pageIssuesTemplate),
+          pageGlobalsTemplate = Hogan.compile(this.templates.globals),
+          pageIssueTemplate = Hogan.compile(this.templates.issue),
           resultsData,
           pageGlobalsHTML,
           pageIssuesHTML,
           a, b;
 
       console.log(responseData);
+
       resultsData = this.processResponse(responseData);
       pageGlobalsHTML = pageGlobalsTemplate.render(resultsData.globals);
-      pageIssuesHTML = '';
+      pageIssuesHTML = "<h2>Results</h2>\n";
       for (a = 0, b = resultsData.issues.length; a < b; a++) {
-        pageIssuesHTML += pageIssuesTemplate.render(resultsData.issues[a]);
+        pageIssuesHTML += pageIssueTemplate.render(resultsData.issues[a]);
       }
       $('#results').append(pageGlobalsHTML + pageIssuesHTML);
     },
@@ -165,8 +240,11 @@
       var _this = this;
 
       this.loadConfig();
-      this.createRequests();
-      this.sendRequests();
+      this.templateLoader = this.loadTemplates();
+      this.templateLoader.done(function () {
+        this.createRequests();
+        this.sendRequests();
+      }.bind(this));
     }  
   };
   root.tenonDashboard = tenonDashboard;
