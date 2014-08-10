@@ -1,28 +1,47 @@
 <div class="globals">
   <h1 class="page-url">{{pageUrl}}</h1>
-  <p>Errors: {{errors}}</p>
-  <p>Issues: {{issues}}</p>
-  <p>Warnings: {{warnings}}</p>
-  <p>Issues of AAA level: {{levels.AAA}}</p>
-  <p>Issues of AA level: {{levels.AA}}</p>
-  <p>Issues of A level: {{levels.A}}</p>
-  <ul>
-    {{#bestPracticeFails}}
-    <li>
-    <p>The page broke this rule of best practice:</p>
-    <blockquote>{{error}} (ID: {{bpID}})</blockquote>
-    <p>...{{count}} times</p>
-    </li>
-    {{/bestPracticeFails}}
-  </ul>
-  <ul>
-    {{#elements}}
-    <li>
-      <p>This element</p>
-      <p><code>{{{html}}}</code></p>
-      <p><code>{{xpath}}</code></p>
-      <p>...was involved in {{count}} results</p>
-    </li>
-    {{/elements}}
-  </ul>
+  <p id="errors">Errors: {{errors}}</p>
+  <p id="issues">Issues: {{issues}}</p>
+  <p id="warnings">Warnings: {{warnings}}</p>
+  <div id="levels">
+    <p class="AAA">Issues of AAA level: {{levels.AAA}}</p>
+    <p class="AA">Issues of AA level: {{levels.AA}}</p>
+    <p class="A">Issues of A level: {{levels.A}}</p>
+  </div>
+  <h2>The page broke these rules of best practice:</h2>
+  <table class="best-practice">
+    <thead>
+      <th class="rule">Rule</th>
+      <th class="count">Number of failures</th>
+    </thead>
+    <tbody>
+      {{#bestPracticeFails}}
+      <tr>
+        <td><blockquote>{{error}} (ID: {{bpID}})</blockquote></td>
+        <td class="count">{{count}}</td>
+      </tr>
+      {{/bestPracticeFails}}
+    </tbody>
+  </table>
+  <h2>These elements broke rules of best practive</h2>
+  <table class="elements">
+    <thead>
+      <th></th>
+      <th class="detail">Detail</th>
+      <th class="count">Number of issues</th>
+    </thead>
+    <tbody>
+      {{#elements}}
+      <tr>
+        <th>HTML</th>
+        <td><code>{{{html}}}</code></td>
+        <td rowspan="2" class="count">{{count}}</td>
+      </tr>
+      <tr>
+        <th>XPath to element</th>
+        <td><code>{{xpath}}</code></td>
+      <tr>
+      {{/elements}}
+    </tbody>
+  </table>
 </div>
