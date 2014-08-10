@@ -132,12 +132,12 @@
           _getBestPracticeFails;
       
       _formatStandard = function (standard) {
-        var query = standard.replace('Web Content Accessibility Guidelines (WCAG) 2.0, Level A:', ''),
-            googleURL = "https://www.google.co.uk/search?q='",
+        var query = standard.replace('Web Content Accessibility Guidelines (WCAG) 2.0, Level A: ', ''),
+            googleURL = "http://www.google.com/search?btnI=I%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q=%27",
             WCAGURL = "' site: www.w3.org/TR/WCAG20/";
 
         return {
-          'googleSearch' : encodeURI(googleURL + query + WCAGURL),
+          'googleSearch' : googleURL + encodeURI(query + WCAGURL),
           'standard' : standard
         };
       };
