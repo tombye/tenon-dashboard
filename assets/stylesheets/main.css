@@ -4,3 +4,104 @@ body {
     margin:10px;
     color: white;
 }
+body {
+    font-family: ntatabularnumbers, nta, sans-serif;
+    background:black;
+    margin:10px;
+    color: white;
+}
+
+/* Global summary */
+
+#errors,
+#issues,
+#warnings {
+    width: 33%;
+    float: left;
+    text-align: center;
+    font-size: 36px;
+    padding: 1em 0
+}
+
+#errors {
+    background: #DF3034;
+}
+
+#issues {
+    background: #F47738;
+}
+
+#warnings {
+    background: #D53880;
+}
+
+#levels { 
+    display: none;
+}
+
+/* Issues viewed by Rules and Elements */
+
+table {
+    text-align: left;
+    margin-bottom: 2em;
+    font-size: 19px;
+    background: white;
+    color: #333;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+table th,
+table td {
+    border: solid 2px black;
+    padding: 1em;
+    word-wrap: break-word;
+}
+
+table blockquote {
+    margin: 0;    
+}
+
+table code {
+    display: block;
+    background: black;
+    color: white;
+    padding: 1em;
+    font-size: 16px;
+}
+
+table tr th {
+    font-weight: normal;
+    font-size: 24px;
+}
+
+table th.detail {
+    width: 60%
+}
+
+table th.count {
+    width: 12%;
+}
+
+table td.count {
+    text-align: center;
+    font-size: 80px;
+    padding: 0.25em 0;
+}
+
+/* Issues */
+
+.issue {
+   background: #BFC1C3;
+   padding: 1em;
+   font-size: 19px;
+   color: #333;
+   border-bottom: 2px black solid;
+}
+
+.issue .issue-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 0.5em;
+}
+
