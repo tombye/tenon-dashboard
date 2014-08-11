@@ -51,8 +51,13 @@
     });
   };
   PageRequest.prototype.onDone = function (data) {
-    this.data = data;
-    tenonDashboard.displayResults(this.url);
+    if (data.status === 200) {
+      this.data = data;
+      tenonDashboard.displayResults(this.url);
+    } else {
+      console.log('Request unsuccessful');
+      console.log(data);
+    }
   };
   PageRequest.prototype.onError = function (status) {
     $(document).on('request.fail', {
